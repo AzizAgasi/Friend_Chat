@@ -11,11 +11,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.techdot.friendchat.MainActivity
+import com.techdot.friendchat.R
 import com.techdot.friendchat.databinding.ActivitySignInBinding
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
-
 
     private val signIn: ActivityResultLauncher<Intent> =
         registerForActivityResult(FirebaseAuthUIActivityResultContract(), this::onSignInResult)
@@ -34,6 +34,7 @@ class SignInActivity : AppCompatActivity() {
         if (Firebase.auth.currentUser == null) {
             val signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
+                .setLogo(R.mipmap.ic_launcher)
                 .setAvailableProviders(listOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
                     AuthUI.IdpConfig.GoogleBuilder().build()

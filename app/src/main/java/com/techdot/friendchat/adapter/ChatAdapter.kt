@@ -1,13 +1,16 @@
 package com.techdot.friendchat.adapter
 
+import android.renderscript.ScriptGroup
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.techdot.friendchat.MainActivity.Companion.ANONYMOUS
@@ -16,14 +19,16 @@ import com.techdot.friendchat.databinding.MessageBinding
 import com.techdot.friendchat.model.ChatMessage
 
 class ChatAdapter(
-    private val options: FirebaseRecyclerOptions<ChatMessage>
+    private val options: FirebaseRecyclerOptions<ChatMessage>,
+    private val currentUserName: String?
 ): FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder>(options) {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.message, parent, false)
-        val binding = MessageBinding.bind(view)
-        return MessageViewHolder(binding)
+            val view = inflater.inflate(R.layout.message, parent, false)
+            val binding = MessageBinding.bind(view)
+            return MessageViewHolder(binding)
     }
 
     override fun onBindViewHolder(
@@ -34,17 +39,24 @@ class ChatAdapter(
         (holder as MessageViewHolder).bind(model)
     }
 
-    inner class MessageViewHolder(private val binding: MessageBinding):
+    inner class MessageViewHolder(
+        private val binding: MessageBinding):
         RecyclerView.ViewHolder(binding.root) {
 
             fun bind(item: ChatMessage) {
-                binding.message.text = item.text
-                binding.username.text = item.name?: ANONYMOUS
+                if (item.name != currentUserName) {
+                    binding.messageTextView.text = item.text
+                    binding.messengerTextView.text = item.name ?: ANONYMOUS
 
-                if (item.photoUrl != null) {
-                    loadImageIntoView(binding.profilePic, item.photoUrl!!)
+                    if (item.photoUrl != null) {
+                        loadImageIntoView(binding.messengerImageView, item.photoUrl!!)
+                    } else {
+                        binding.messengerImageView.setImageResource(R.drawable.user)
+                    }
                 } else {
-                    binding.profilePic.setImageResource(R.drawable.user)
+                    binding.messageTextView.text = item.text
+                    binding.messengerTextView.visibility = View.GONE
+                    binding.messengerImageView.visibility = View.GONE
                 }
             }
         }

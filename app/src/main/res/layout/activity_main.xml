@@ -7,45 +7,40 @@
     tools:context="com.techdot.friendchat.MainActivity"
     android:background="#E0F7FA">
 
-    <LinearLayout
-        android:id="@+id/sendLayout"
-        android:layout_width="match_parent"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        app:cardCornerRadius="25dp"
+        app:layout_constraintWidth_percent="0.875"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="5dp">
+        app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="350dp"
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cardCornerRadius="25dp">
-
-            <EditText
-                android:id="@+id/messageInput"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/type_a_message"
-                android:layout_marginStart="5dp"
-                android:backgroundTint="@android:color/transparent"/>
-
-        </androidx.cardview.widget.CardView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_send_24"
             android:layout_marginStart="5dp"
-            android:layout_marginEnd="0dp"/>
+            android:backgroundTint="@android:color/transparent"
+            android:hint="@string/type_a_message" />
 
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/sendButton"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_baseline_send_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.125"
+        app:layout_constraintStart_toEndOf="@+id/cardView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/sendLayout"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
