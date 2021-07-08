@@ -1,50 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="16dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/messageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#EDE7F6"
         app:cardCornerRadius="25dp"
-    android:layout_margin="10dp"
-        xmlns:tools="http://schemas.android.com/tools">
+        app:layout_constraintTop_toBottomOf="@id/senderDetailView"
+        app:layout_constraintStart_toStartOf="@id/senderDetailView">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-
-        <TextView
-            android:id="@+id/messageTextView"
-            android:layout_width="wrap_content"
-            android:maxWidth="250dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:padding="10dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"
-            app:layout_constraintStart_toEndOf="@id/messengerImageView"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="This is a message" />
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/messengerImageView"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintHorizontal_bias="1.0"
+                tools:src="@drawable/user"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/messageTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="250dp"
+                android:minWidth="80dp"
+                android:padding="10dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"
+                tools:text="This is a message" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/senderDetailView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/messengerTextView"
+            tools:text="FirstName LastName"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="10dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            app:layout_constraintStart_toStartOf="@id/messageTextView"
-            app:layout_constraintTop_toBottomOf="@id/messageTextView"
-            tools:text="FirstName LastName" />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/messengerImageView"
-            android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginBottom="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/messageTextView"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
-
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

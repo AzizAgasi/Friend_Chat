@@ -5,18 +5,23 @@ import android.content.Intent
 import android.database.DataSetObserver
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.techdot.friendchat.adapter.ChatAdapter
 import com.techdot.friendchat.databinding.ActivityMainBinding
 import com.techdot.friendchat.model.ChatMessage
 import com.techdot.friendchat.signIn.SignInActivity
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -58,6 +63,8 @@ class MainActivity : AppCompatActivity() {
         adapter.registerAdapterDataObserver(
             ScrollToBottomObserver(binding.messageRecyclerView, adapter, manager)
         )
+
+        binding.messageInput.addTextChangedListener(SendButtonObserver(binding.sendButton))
 
         binding.sendButton.setOnClickListener {
             val message = ChatMessage(
@@ -128,5 +135,22 @@ class MainActivity : AppCompatActivity() {
                 recycler.scrollToPosition(positionStart)
             }
         }
+    }
+
+    inner class SendButtonObserver(private val button: ImageView): TextWatcher {
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (s.toString().trim().isNotEmpty()) {
+                button.isEnabled = true
+                button.setImageResource(R.drawable.ic_baseline_send_24_enabled)
+            } else {
+                button.isEnabled = false
+                button.setImageResource(R.drawable.ic_baseline_send_24)
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) = Unit
     }
 }
