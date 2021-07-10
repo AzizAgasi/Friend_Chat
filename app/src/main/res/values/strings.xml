@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Friend Chat</string>
     <string name="type_a_message">Type a message</string>
+    <string name="profile">Profile</string>
+    <string name="log_out">Log out</string>
+    <string name="name">Name</string>
+    <string name="save">Save</string>
 </resources>

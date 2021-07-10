@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -35,6 +38,7 @@ import com.techdot.friendchat.notification.NotificationData
 import com.techdot.friendchat.notification.NotificationUtils
 import com.techdot.friendchat.notification.PushNotification
 import com.techdot.friendchat.notification.RetrofitInstance
+import com.techdot.friendchat.profile.ProfileActivity
 import com.techdot.friendchat.signIn.SignInActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -151,6 +155,32 @@ class MainActivity : AppCompatActivity() {
         return if (user != null) {
             user.displayName
         } else ANONYMOUS
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.profileMenuOption -> {
+                startActivity(Intent(this, ProfileActivity::class.java))
+                true
+            }
+            R.id.logOutMenuOption -> {
+                signOut()
+                false
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun signOut() {
+        AuthUI.getInstance().signOut(this)
+        startActivity(Intent(this, SignInActivity::class.java))
+        finish()
     }
 
     companion object {
