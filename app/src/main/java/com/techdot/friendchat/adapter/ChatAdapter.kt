@@ -56,7 +56,6 @@ class ChatAdapter(
             fun bind(item: ChatMessage) {
                 binding.messageTextView.text = item.text
                 binding.messengerTextView.text = item.name ?: ANONYMOUS
-
                 if (item.photoUrl != null) {
                     loadImageIntoView(binding.messengerImageView, item.photoUrl!!)
                 } else {

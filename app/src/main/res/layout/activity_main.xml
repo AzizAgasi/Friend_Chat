@@ -24,7 +24,8 @@
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:inputType="textCapSentences"
-            android:backgroundTint="@android:color/transparent"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
             android:hint="@string/type_a_message" />
 
     </androidx.cardview.widget.CardView>

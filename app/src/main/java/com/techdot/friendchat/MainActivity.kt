@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             // or the user is at the bottom of the list
             // scroll to the bottom of the list to show newly added messages
             val loading = lastVisiblePosition == -1
-            val atBottom = positionStart >= count && lastVisiblePosition == positionStart -1
+            val atBottom = positionStart >= count - 1 && lastVisiblePosition == positionStart -1
 
             if (loading || atBottom) {
                 recycler.scrollToPosition(positionStart)
