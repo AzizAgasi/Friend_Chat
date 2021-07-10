@@ -1,26 +1,44 @@
 package com.techdot.friendchat
 
 import android.content.AbstractThreadedSyncAdapter
+import android.content.Context
 import android.content.Intent
 import android.database.DataSetObserver
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
+import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
+import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.techdot.friendchat.adapter.ChatAdapter
 import com.techdot.friendchat.databinding.ActivityMainBinding
 import com.techdot.friendchat.model.ChatMessage
+import com.techdot.friendchat.notification.NotificationData
+import com.techdot.friendchat.notification.NotificationUtils
+import com.techdot.friendchat.notification.PushNotification
+import com.techdot.friendchat.notification.RetrofitInstance
 import com.techdot.friendchat.signIn.SignInActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: ChatAdapter
+
+    val TOPIC = "/topics/messageTopic"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +64,12 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        NotificationUtils.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        FirebaseInstallations.getInstance().id.addOnSuccessListener {
+            NotificationUtils.token = it
+        }
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         database = Firebase.database
         val messagesRef = database.reference.child(MESSAGES_CHILD)
@@ -74,6 +100,16 @@ class MainActivity : AppCompatActivity() {
             )
             database.reference.child(MESSAGES_CHILD).push().setValue(message)
             binding.messageInput.setText("")
+            PushNotification (
+                NotificationData(
+                    message.name,
+                    "Message from ${message.name}",
+                    message.text
+                ), TOPIC
+            ).also {
+                sendNotification(it)
+            }
+            hideKeyboard(binding.messageInput)
         }
 
     }
@@ -85,6 +121,9 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
+        adapter.registerAdapterDataObserver(
+            ScrollToBottomObserver(binding.messageRecyclerView, adapter, manager)
+        )
     }
 
     public override fun onPause() {
@@ -95,6 +134,11 @@ class MainActivity : AppCompatActivity() {
     public override fun onResume() {
         super.onResume()
         adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        startService(Intent(this, NotificationUtils::class.java))
     }
 
     private fun getPhotoUrl(): String? {
@@ -112,6 +156,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val ANONYMOUS = "Anonymous"
         const val MESSAGES_CHILD = "messages"
+        const val TAG = "MainActivity"
     }
 
     inner class ScrollToBottomObserver(
@@ -152,5 +197,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun afterTextChanged(s: Editable?) = Unit
+    }
+
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.postNotification(notification)
+                if(response.isSuccessful) {
+                    Log.d(TAG, "Response: ${Gson().toJson(response)}")
+                } else {
+                    Log.e(TAG, response.errorBody().toString())
+                }
+            } catch(e: Exception) {
+                Log.e(TAG, e.toString())
+            }
+        }
+
+    private fun hideKeyboard(editText: EditText) {
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as
+                InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 }
